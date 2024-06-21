@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -9,7 +10,7 @@ import { environment } from 'src/environments/environment';
 export class AuthService {
   private clientId = environment.clientId;
   private redirectUri = environment.redirectUri;
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private oauthService: OAuthService) { }
 
 
   // Step 1: Redirect to authorization endpoint
@@ -40,5 +41,21 @@ export class AuthService {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
+  }
+
+  public login() {
+    this.oauthService.initCodeFlow();
+  }
+
+  public logout() {
+    this.oauthService.logOut();
+  }
+
+  public get isLoggedIn(): boolean {
+    return this.oauthService.hasValidAccessToken();
+  }
+
+  public get accessToken(): string {
+    return this.oauthService.getAccessToken();
   }
 }
